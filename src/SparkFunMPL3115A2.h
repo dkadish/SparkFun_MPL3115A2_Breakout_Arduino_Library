@@ -1,16 +1,16 @@
-/* 
+/*
  MPL3115A2 Barometric Pressure Sensor Library
  By: Nathan Seidle
  SparkFun Electronics
  Date: September 24th, 2013
  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
- 
+
  Get pressure, altitude and temperature from the MPL3115A2 sensor.
- 
+
  */
- 
-#ifndef _SPARKFUN_MPL3115A2_H_ 
-#define _SPARKFUN_MPL3115A2_H_ 
+
+#ifndef _SPARKFUN_MPL3115A2_H_
+#define _SPARKFUN_MPL3115A2_H_
 
 #if defined(ARDUINO) && ARDUINO >= 100
  #include "Arduino.h"
@@ -18,7 +18,11 @@
  #include "WProgram.h"
 #endif
 
+#if defined(__arm__) && defined(CORE_TEENSY)
+#include <i2c_t3.h>
+#else
 #include <Wire.h>
+#endif
 
 #define MPL3115A2_ADDRESS 0x60 // Unshifted 7-bit I2C address for sensor
 
@@ -74,6 +78,10 @@ class MPL3115A2 {
 public:
   MPL3115A2();
 
+#if defined(__arm__) && defined(CORE_TEENSY)
+  MPL3115A2(i2c_t3 * wire);
+#endif
+
   //Public Functions
   void begin(); // Gets sensor on the I2C bus.
   float readAltitude(); // Returns float with meters above sealevel. Ex: 1638.94
@@ -92,6 +100,12 @@ public:
 
 private:
   //Private Functions
+
+#if defined(__arm__) && defined(CORE_TEENSY)
+    i2c_t3 * _wire;
+#else
+    TwoWire * _wire;
+#endif
 
   void toggleOneShot();
   byte IIC_Read(byte regAddr);
